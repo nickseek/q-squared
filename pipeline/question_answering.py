@@ -33,8 +33,12 @@ def get_subtexts(input,max_tokens,question):
         windows = {i:i+max_tokens for i in left_idxs}
         return windows
     def get_string_best_cut(token_idx):
-        if token_idx == 0:
-            return 0
+        if token_idx < words_token_count[0]:
+            if token_idx == 0:
+                return 0
+            else:
+                return 1 #as window starting with 0 already exists
+
         tokens_num_cut = [i for i in words_token_count if token_idx - i >= 0][-1]
         cut_string_idx = words_idxs[words_token_count.index(tokens_num_cut)]
         return cut_string_idx
@@ -50,6 +54,7 @@ def get_subtexts(input,max_tokens,question):
     token_idxs_windows = get_token_idx_windows(num_tokens,max_tokens)
     words_idxs = [i for i, j in enumerate(input) if j == ' '] + [len(input)]
     words_token_count = [get_num_tokens(input[:i]) for i in words_idxs]
+    print(token_idxs_windows.items())
     input_cut_idxs = {get_string_best_cut(i):get_string_best_cut(token_idxs_windows[i]) for i in token_idxs_windows}
     substrings = [input[i:input_cut_idxs[i]] for i in input_cut_idxs]
     # print(f'input cut idx: {input_cut_idxs}')
