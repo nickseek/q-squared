@@ -51,19 +51,31 @@ def non_personal(question):
 
 
 def single_question_score(question, cand, response, knowledge):
-    pred_ans = qa.get_answer(question, response)
+    pred_ans = qa.get_answer(question, response, max_tokens=False)[0]
+    score_to_ans = {}
 
     if filter_questions(cand, pred_ans) == 'VALID':
-        knowledge_ans = qa.get_answer(question, knowledge)
-        if knowledge_ans != NO_ANS:
-            return f1_score(cand, knowledge_ans), knowledge_ans
-        else:
-            return 0, NO_ANS
+        knowledge_ans_list = qa.get_answer(question, knowledge, max_tokens=500)
+        # print(f"knowledge knowledgeanswer: {knowledge_ans_list}")
+        for knowledge_ans in knowledge_ans_list:
+            # print(f"knowledge_ans: {knowledge_ans}")
+            if knowledge_ans != NO_ANS:
+                score_to_ans[f1_score(cand, knowledge_ans)] = knowledge_ans
+            else:
+                score_to_ans[0]=NO_ANS
     else:
-        return INVALID_QUESTION, INVALID_QUESTION
+        # print(f"invalid question - {cand}, {pred_ans}")
+        return INVALID_QUESTION,INVALID_QUESTION
+    # print(score_to_ans.items())
+    best_score = sorted(score_to_ans,reverse=True)[0]
+    best_answer = score_to_ans[best_score]
+    # print(best_score)
+    # print(best_answer)
+    return best_score,best_answer
 
 
 def get_response_score(response, knowledge, gen_method, single, remove_personal):
+    # print(response)
     f1 = 0
     num_questions = 0
 
@@ -118,7 +130,6 @@ def response_questions_stats(response, knowledge, gen_method, single, remove_per
         for question in questions:
             if not remove_personal or non_personal(question):
                 pred_ans = qa.get_answer(question, response)
-
                 if filter_questions(cand, pred_ans) == 'VALID':
                     num_questions += 1
                     knowledge_ans = qa.get_answer(question, knowledge)
