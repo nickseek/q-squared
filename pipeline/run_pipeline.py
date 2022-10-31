@@ -52,7 +52,7 @@ def non_personal(question):
 
 
 def single_question_score(question, cand, response, knowledge):
-    pred_ans = qa.get_answer(question, response, max_tokens=MAX_TOKENS)[0]
+    pred_ans = qa.get_answer(question, response, max_tokens=MAX_TOKENS)[0] #assuming response is always < max tokens
     score_to_ans = {}
 
     if filter_questions(cand, pred_ans) == 'VALID':

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import torch
-from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline, PreTrainedTokenizerFast
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
 
 qa_tokenizer = AutoTokenizer.from_pretrained("ktrapeznikov/albert-xlarge-v2-squad-v2")
@@ -73,7 +73,6 @@ def get_answer(question, text, max_tokens):  # Code taken from https://huggingfa
 
         ans = qa_tokenizer.convert_tokens_to_string(qa_tokenizer.convert_ids_to_tokens(input_ids[answer_start:answer_end]))
         answers.append(ans)
-    # print(answers)
     return answers
 
 # model_name = "ktrapeznikov/albert-xlarge-v2-squad-v2"
