@@ -26,6 +26,7 @@ from tqdm import tqdm
 INVALID_QUESTION = -1
 NO_ANS = '[CLS]'
 NO_VALID_QUESTIONS = 'NO_Q'
+MAX_TOKENS = 400
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -51,26 +52,23 @@ def non_personal(question):
 
 
 def single_question_score(question, cand, response, knowledge):
-    pred_ans = qa.get_answer(question, response, max_tokens=False)[0]
+    pred_ans = qa.get_answer(question, response, max_tokens=MAX_TOKENS)[0]
     score_to_ans = {}
 
     if filter_questions(cand, pred_ans) == 'VALID':
-        knowledge_ans_list = qa.get_answer(question, knowledge, max_tokens=500)
-        # print(f"knowledge knowledgeanswer: {knowledge_ans_list}")
+        knowledge_ans_list = qa.get_answer(question, knowledge, max_tokens=MAX_TOKENS)
+        #max tokens is 100 tokens smaller than needed due to edge cases, such as cutting a url in the middle, which adds a lot of tokens.
+        # Possibly change token count to reflect this somehow?
         for knowledge_ans in knowledge_ans_list:
-            # print(f"knowledge_ans: {knowledge_ans}")
             if knowledge_ans != NO_ANS:
                 score_to_ans[f1_score(cand, knowledge_ans)] = knowledge_ans
             else:
                 score_to_ans[0]=NO_ANS
     else:
-        # print(f"invalid question - {cand}, {pred_ans}")
         return INVALID_QUESTION,INVALID_QUESTION
-    # print(score_to_ans.items())
+
     best_score = sorted(score_to_ans,reverse=True)[0]
     best_answer = score_to_ans[best_score]
-    # print(best_score)
-    # print(best_answer)
     return best_score,best_answer
 
 
