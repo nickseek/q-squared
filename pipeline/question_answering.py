@@ -22,38 +22,56 @@ qa_model = AutoModelForQuestionAnswering.from_pretrained("ktrapeznikov/albert-xl
 
 
 def get_subtexts(input,max_tokens,question):
-    def count_tokens(text):
+    def get_num_tokens(text):
         return len(qa_tokenizer.encode(text))
-    def get_token_count_windows(num_tokens,max_tokens):
+    def get_desired_token_windows(num_tokens,max_tokens):
         overlap_size = round(max_tokens / 3)
         left_idxs = [0, num_tokens - max_tokens]
         while left_idxs[-1] - left_idxs[-2] > max_tokens - overlap_size:
             left_idxs.insert(-1, left_idxs[-2] + (max_tokens - overlap_size))
         windows = {i:i+max_tokens for i in left_idxs}
         return windows
-    def get_string_best_cut(num_tokens):
-        if num_tokens < words_token_count[0]:
-            if num_tokens == 0:
-                return 0
-            else:
-                return 1 #as window starting with 0 already exists
+    def get_best_word_cuts(desired_token_windows, words_token_count):
+        NO_ACTUAL_TOKENS_NUM = 2 #start+end tokens
+        def get_string_best_single_cut(token_num):
+            if token_num == 0:
+                return NO_ACTUAL_TOKENS_NUM
+            tokens_num_cut = [i for i in words_token_count if token_num - i >= 0][-1]
+            return tokens_num_cut
+        word_windows_idxs = {}
+        for start_token_num in desired_token_windows:
+            start_token_num_cut = get_string_best_single_cut(start_token_num)
+            end_token_num_cut = get_string_best_single_cut(desired_token_windows[start_token_num])
+            can_shorten_left = start_token_num_cut != NO_ACTUAL_TOKENS_NUM
+            can_shorten_right = end_token_num_cut != words_token_count[-1]
+            start_word_idx = words_token_count.index(start_token_num_cut)
+            end_word_idx = words_token_count.index(end_token_num_cut)
+            while end_token_num_cut - start_token_num_cut > max_tokens:
+                if can_shorten_left:
+                    start_word_idx += 1
+                    start_token_num_cut = words_token_count[start_word_idx]
+                    if (end_token_num_cut - start_token_num_cut) > max_tokens and can_shorten_right:
+                        end_word_idx += -1
+                        end_token_num_cut = words_token_count[end_word_idx]
+                else:
+                    end_word_idx += -1
+                    end_token_num_cut = words_token_count[end_word_idx]
+            word_windows_idxs[start_word_idx] = end_word_idx
+        return word_windows_idxs
 
-        tokens_num_cut = [i for i in words_token_count if num_tokens - i >= 0][-1]
-        cut_string_idx = words_idxs[words_token_count.index(tokens_num_cut)]
-        return cut_string_idx
-
-    num_question_tokens = count_tokens(question)
+    num_question_tokens = get_num_tokens(question)
     max_tokens = max_tokens - num_question_tokens
-    num_tokens = count_tokens(input)
+    num_tokens = get_num_tokens(input)
     if num_tokens <= max_tokens:
         return [input]
 
-    token_count_windows = get_token_count_windows(num_tokens,max_tokens)
-    words_idxs = [i for i, j in enumerate(input) if j == ' '] + [len(input)]
-    words_token_count = [count_tokens(input[:i]) for i in words_idxs]
-    input_cut_idxs = {get_string_best_cut(i):get_string_best_cut(token_count_windows[i]) for i in token_count_windows}
-    substrings = [input[i:input_cut_idxs[i]] for i in input_cut_idxs]
+    desired_token_windows = get_desired_token_windows(num_tokens,max_tokens)
+    words_idxs = [0] + [i for i, j in enumerate(input) if j == ' '] + [len(input)]
+    words_token_count = [get_num_tokens(input[:i]) for i in words_idxs]
+    word_cut_idxs = get_best_word_cuts(desired_token_windows,words_token_count)
+    substrings = [input[words_idxs[i]:words_idxs[word_cut_idxs[i]]] for i in word_cut_idxs]
     return substrings
+
 
 
 

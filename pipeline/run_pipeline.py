@@ -26,7 +26,7 @@ from tqdm import tqdm
 INVALID_QUESTION = -1
 NO_ANS = '[CLS]'
 NO_VALID_QUESTIONS = 'NO_Q'
-MAX_TOKENS = 400
+MAX_TOKENS = 510
 
 nlp = spacy.load("en_core_web_sm")
 
@@ -57,8 +57,6 @@ def single_question_score(question, cand, response, knowledge):
 
     if filter_questions(cand, pred_ans) == 'VALID':
         knowledge_ans_list = qa.get_answer(question, knowledge, max_tokens=MAX_TOKENS)
-        #max tokens is 100 tokens smaller than needed due to edge cases, such as cutting a url in the middle, which adds a lot of tokens.
-        # Possibly change token count to reflect this somehow?
         for knowledge_ans in knowledge_ans_list:
             if knowledge_ans != NO_ANS:
                 score_to_ans[f1_score(cand, knowledge_ans)] = knowledge_ans
