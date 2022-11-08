@@ -18,9 +18,9 @@ import numpy as np
 import pandas as pd
 import spacy
 
-import pipeline.question_generation as qg
-import pipeline.question_answering as qa
-from pipeline.score import f1_score, clean_text
+import q_squared.question_generation as qg
+import q_squared.question_answering as qa
+from q_squared.score import f1_score, clean_text
 from tqdm import tqdm
 
 INVALID_QUESTION = -1
