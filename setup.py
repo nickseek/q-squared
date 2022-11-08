@@ -7,7 +7,7 @@ setup(name='q_squared',
       author='Or Honovich',
       author_email='or.honovich@gmail.com',
       license='Apache License 2.0',
-      packages=['pipeline'
+      packages=['pipeline',
                 ],
       install_requires=[
           'numpy', 'pandas','bert-score','spacy','torch','transformers','sentencepiece', 'protobuf==3.20'
