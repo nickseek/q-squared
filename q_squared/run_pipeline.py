@@ -18,9 +18,9 @@ import numpy as np
 import pandas as pd
 import spacy
 
-import pipeline.question_generation as qg
-import pipeline.question_answering as qa
-from pipeline.score import f1_score, clean_text
+import q_squared.question_generation as qg
+import q_squared.question_answering as qa
+from q_squared.score import f1_score, clean_text
 from tqdm import tqdm
 
 INVALID_QUESTION = -1
@@ -203,7 +203,7 @@ def calc_scores(in_path, gen_method, single, remove_personal, out_path='', save_
 
     return valid_scores
 
-def main(infile,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=False):
+def run(infile,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=False):
     if q_per_cand == 'single':
         single_q = True
     else:
