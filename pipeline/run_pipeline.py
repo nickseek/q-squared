@@ -18,9 +18,9 @@ import numpy as np
 import pandas as pd
 import spacy
 
-import question_generation as qg
-import question_answering as qa
-from score import f1_score, clean_text
+import pipeline.question_generation as qg
+import pipeline.question_answering as qa
+from pipeline.score import f1_score, clean_text
 from tqdm import tqdm
 
 INVALID_QUESTION = -1
@@ -203,6 +203,19 @@ def calc_scores(in_path, gen_method, single, remove_personal, out_path='', save_
 
     return valid_scores
 
+def main(infile,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=False):
+    if q_per_cand == 'single':
+        single_q = True
+    else:
+        single_q = False
+
+    if personal == 'remove':
+        rm_personal = True
+    else:
+        rm_personal = False
+
+    calc_scores(infile, gen_method, single=single_q, remove_personal=rm_personal,
+                out_path=outfile, save_steps=save_steps)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
