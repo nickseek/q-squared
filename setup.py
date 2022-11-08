@@ -6,9 +6,7 @@ setup(name='q-squared',
       url='https://github.com/nickseek/q-squared/tree/split_long',
       author='Or Honovich',
       author_email='or.honovich@gmail.com',
-      license='Apache License 2.0',
-      packages=['q-squared',
-                ],
+      license='Apache License 2.0',      
       install_requires=[
           'numpy', 'pandas','bert-score','spacy','torch','transformers','sentencepiece', 'protobuf==3.20'
       ],
