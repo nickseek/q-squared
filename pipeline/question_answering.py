@@ -15,9 +15,9 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForQuestionAnswering
 
-
+device = torch.device("cuda" if torch.cuda.is_available()  else "cpu")
 qa_tokenizer = AutoTokenizer.from_pretrained("ktrapeznikov/albert-xlarge-v2-squad-v2")
-qa_model = AutoModelForQuestionAnswering.from_pretrained("ktrapeznikov/albert-xlarge-v2-squad-v2")
+qa_model = AutoModelForQuestionAnswering.from_pretrained("ktrapeznikov/albert-xlarge-v2-squad-v2").to(device)
 
 
 
@@ -79,10 +79,10 @@ def get_answer(question, text, max_tokens):  # Code taken from https://huggingfa
     texts = get_subtexts(text, max_tokens, question)
     answers = []
     for sub_text in texts:
-        inputs = qa_tokenizer.encode_plus(question, sub_text, add_special_tokens=True, return_tensors="pt")
+        inputs = qa_tokenizer.encode_plus(question, sub_text, add_special_tokens=True, return_tensors="pt").to(device)
         input_ids = inputs["input_ids"].tolist()[0]
 
-        answer_start_scores, answer_end_scores = qa_model(**inputs, return_dict=False)
+        answer_start_scores, answer_end_scores = qa_model(**inputs, return_dict=False).to(device)
 
         answer_start = torch.argmax(
             answer_start_scores
