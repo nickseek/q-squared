@@ -149,11 +149,13 @@ def get_stats(in_path, gen_method, single, remove_personal):
     print("No answer: {0}".format(num_no_ans / num_questions))
 
 
+
 def calc_scores(df, gen_method, single, remove_personal, out_path='', save_steps=False):
     print(gen_method, single, remove_personal)
     print(save_steps, flush=True)
     q_scores = []
     # df = pd.read_csv(in_path)
+
 
     all_questions = []
     all_cands = []
@@ -204,6 +206,7 @@ def calc_scores(df, gen_method, single, remove_personal, out_path='', save_steps
     return valid_scores
 
 def run(df,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=False):
+
     if q_per_cand == 'single':
         single_q = True
     else:
@@ -213,6 +216,7 @@ def run(df,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=
         rm_personal = True
     else:
         rm_personal = False
+
 
     scores = calc_scores(df, gen_method, single=single_q, remove_personal=rm_personal,
                 out_path=outfile, save_steps=save_steps)
@@ -243,6 +247,7 @@ if __name__ == '__main__':
         rm_personal = True
     else:
         rm_personal = False
+
 
     calc_scores(pd.read_csv(args.infile), args.gen_method, single=single_q, remove_personal=rm_personal,
                 out_path=args.outfile, save_steps=args.save_steps)
