@@ -71,7 +71,6 @@ def single_question_score(question, cand, response, knowledge):
 
 
 def get_response_score(response, knowledge, gen_method, single, remove_personal):
-    # print(response)
     f1 = 0
     num_questions = 0
 
