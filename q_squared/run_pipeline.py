@@ -149,7 +149,7 @@ def get_stats(in_path, gen_method, single, remove_personal):
 
 
 
-def calc_scores(df, gen_method, single, remove_personal, out_path='', save_steps=False):
+def calc_scores(df, gen_method, single, remove_personal, out_path='', save_steps=False, include_invalid_scores=False):
     print(gen_method, single, remove_personal)
     print(save_steps, flush=True)
     q_scores = []
@@ -201,8 +201,11 @@ def calc_scores(df, gen_method, single, remove_personal, out_path='', save_steps
     valid_scores = [s for s in q_scores if s != -1]
     print("total with at least 1 valid question:", len(valid_scores))
     print("score:", np.mean(valid_scores))
-
-    return valid_scores
+    
+    if include_invalid_scores:
+        return q_scores
+    else:
+        return valid_scores
 
 def run(df,gen_method,q_per_cand='single',personal='keep',outfile='',save_steps=False):
 
