@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='q_squared',
-      version='1.03',
+      version='1.04',
       description='A reference-free metric that aims to evaluate the factual consistency of knowledge-grounded dialogue systems',
       url='https://github.com/nickseek/q-squared/tree/split_long',
       author='Or Honovich',
