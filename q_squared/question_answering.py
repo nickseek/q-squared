@@ -37,7 +37,8 @@ def get_subtexts(input,max_tokens,question):
         def get_string_best_single_cut(token_num):
             if token_num == 0:
                 return NO_ACTUAL_TOKENS_NUM
-            tokens_num_cut = [i for i in words_token_count if token_num - i >= 0][-1]
+            filter_counts = [i for i in words_token_count if token_num - i >= 0]
+            tokens_num_cut = filter_counts[-1] if len(filter_counts)>0 else NO_ACTUAL_TOKENS_NUM
             return tokens_num_cut
         word_windows_idxs = {}
         for start_token_num in desired_token_windows:
